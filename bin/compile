@@ -75,11 +75,13 @@ status "Meteorite installed"
 # Run subsequent node/npm commands from the build path
 cd $build_dir 
 
+echo $PACKAGE_DIRS
 # 
 status "Install Packages"
 HOME="$VENDORED_METEOR" mrt install --force | indent
 status "Packages installed"
-ls packages
+ls -l packages
+ls -l packages/zf5/
 # add "vendor" to ignored directory
 sed -i 's:var ignoreFiles = \[:var ignoreFiles = \[ /\^vendor\\/\$/ , /\^cctrlapp\\/\$/ ,:g' $VENDORED_METEOR/.meteor/tools/latest/tools/bundler.js
 
