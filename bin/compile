@@ -29,7 +29,7 @@ node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" http
 
 # Recommend using semver ranges in a safe manner
 if [ "$semver_range" == "null" ]; then
-  protip "Specify a node version in package.json"
+  #protip "Specify a node version in package.json"
   semver_range=""
 elif [ "$semver_range" == "*" ]; then
   protip "Avoid using semver ranges like '*' in engines.node"
@@ -75,13 +75,11 @@ status "Meteorite installed"
 # Run subsequent node/npm commands from the build path
 cd $build_dir 
 
-echo $PACKAGE_DIRS
 # 
 status "Install Packages"
 HOME="$VENDORED_METEOR" mrt install --force | indent
 status "Packages installed"
-ls -la packages
-ls -la packages/zf5/
+
 # add "vendor" to ignored directory
 sed -i 's:var ignoreFiles = \[:var ignoreFiles = \[ /\^vendor\\/\$/ , /\^cctrlapp\\/\$/ ,:g' $VENDORED_METEOR/.meteor/tools/latest/tools/bundler.js
 
