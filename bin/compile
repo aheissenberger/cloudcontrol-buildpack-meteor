@@ -77,7 +77,7 @@ cd $build_dir
 
 # 
 status "Install Packages"
-HOME="$BUILD_DIR" mrt install --force | indent
+HOME="$VENDORED_METEOR" mrt install --force | indent
 status "Packages installed"
 ls packages
 # add "vendor" to ignored directory
