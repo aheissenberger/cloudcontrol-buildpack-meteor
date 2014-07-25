@@ -18,7 +18,11 @@ source $bp_dir/bin/common.sh
 trap cat_npm_debug_log ERR
 
 # Look in package.json's engines.node field for a semver range
-semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
+if [ -e $build_dir/package.json ]; then
+   semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
+else
+   semver_range="null"
+fi
 
 # Resolve node version using semver.io
 node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
@@ -51,81 +55,51 @@ mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
 chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
 
+# install meteorite
+status "Installing meteor"
+# Using different folder to prevent install script form deleting packages file
+VENDORED_METEOR="$cache_dir/meteor"
+mkdir -p $cache_dir
+if [ ! -d "$VENDORED_METEOR" ]; then
+  mkdir -p $VENDORED_METEOR
+  curl https://install.meteor.com | HOME="$VENDORED_METEOR" /bin/sh
+  status "Meteor installed" | indent
+else
+  status "Meteor from Cache"
+fi
+
+status "Install meteorite"
+npm install -g meteorite
+status "Meteorite installed"
+
 # Run subsequent node/npm commands from the build path
-cd $build_dir
+cd $build_dir 
 
-# If node_modules directory is checked into source control then
-# rebuild any native deps. Otherwise, restore from the build cache.
-if test -d $build_dir/node_modules; then
-  status "Found existing node_modules directory; skipping cache"
-  status "Rebuilding any native dependencies"
-  npm rebuild 2>&1 | indent
-elif test -d $cache_dir/node/node_modules; then
-  status "Restoring node_modules directory from cache"
-  cp -r $cache_dir/node/node_modules $build_dir/
+# 
+status "Install Packages"
+HOME="$BUILD_DIR" mrt install --force | indent
+status "Packages installed"
 
-  status "Pruning cached dependencies not specified in package.json"
-  npm prune 2>&1 | indent
+# add "vendor" to ignored directory
+sed -i 's:var ignoreFiles = \[:var ignoreFiles = \[ /\^vendor\\/\$/ , /\^cctrlapp\\/\$/ ,:g' $VENDORED_METEOR/.meteor/tools/latest/tools/bundler.js
 
-  if test -f $cache_dir/node/.paasprovider/node-version && [ $(cat $cache_dir/node/.paasprovider/node-version) != "$node_version" ]; then
-    status "Node version changed since last build; rebuilding dependencies"
-    npm rebuild 2>&1 | indent
-  fi
+# bundle meteor app
+status "Bundle meteor App"
+mkdir -p $build_dir/cctrlapp
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/tools/latest/launch-meteor" bundle --directory $build_dir/cctrlapp 2>&1 | indent
+status "App bundled"
 
-fi
+# remove build files
+status "Remove build files"
+find . -maxdepth 1 -not -name 'vendor' -not -name 'cctrlapp' -not -name '..' -not -name '.' | xargs rm -fr
 
-# Scope config var availability only to `npm install`
-(
-  if [ -d "$env_dir" ]; then
-    status "Exporting config vars to environment"
-    export_env_dir $env_dir
-  fi
-
-  status "Installing dependencies"
-  # Make npm output to STDOUT instead of its default STDERR
-  npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
-)
-
-# Persist goodies like node-version in the slug
-mkdir -p $build_dir/.paasprovider
-
-# Save resolved node version in the slug for later reference
-echo $node_version > $build_dir/.paasprovider/node-version
-
-# Purge node-related cached content, being careful not to purge the top-level
-# cache, for the sake of heroku-buildpack-multi apps.
-rm -rf $cache_dir/node_modules # (for apps still on the older caching strategy)
-rm -rf $cache_dir/node
-mkdir -p $cache_dir/node
-
-# If app has a node_modules directory, cache it.
-if test -d $build_dir/node_modules; then
-  status "Caching node_modules directory for future builds"
-  cp -r $build_dir/node_modules $cache_dir/node
-fi
-
-# Copy goodies to the cache
-cp -r $build_dir/.paasprovider $cache_dir/node
-
-status "Cleaning up node-gyp and npm artifacts"
-rm -rf "$build_dir/.node-gyp"
-rm -rf "$build_dir/.npm"
-
-# If Procfile is absent, try to create one using `npm start`
 if [ ! -e $build_dir/Procfile ]; then
-  npm_start=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .scripts.start)
-
-  # If `scripts.start` is set in package.json, or a server.js file
-  # is present in the app root, then create a default Procfile
-  if [ "$npm_start" != "null" ] || [ -f $build_dir/server.js ]; then
-    status "No Procfile found; Adding npm start to new Procfile"
-    echo "web: npm start" > $build_dir/Procfile
-  else
-    status "Procfile not found and npm start script is undefined"
-    protip "Create a Procfile or specify a start script in package.json"
-  fi
+  status "Create Procfile"
+  echo 'web: MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node cctrlapp/main.js' > $build_dir/Procfile
+  status 'web: MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node cctrlapp/main.js' 
+else 
+  status "Use existing Procfile"
 fi
-
 # Update the PATH
 status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
