@@ -43,6 +43,11 @@ do not forget to remove all other mongo database addons - e.g.
 ~~~bash
 cctrlapp APP_NAME/default addon.remove mongosoup.sandbox
 ~~~
+if you switch to a MonoLab Sandbox remove the config:
+~~~bash
+$ cctrlapp APP_NAME/default config.remove MONGO_OPLOG_CRED
+~~~
+
 
 
 Node.js and npm versions (OPTIONAL - defaults to stable version)
