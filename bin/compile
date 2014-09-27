@@ -8,7 +8,7 @@ set -o pipefail   # don't ignore exit codes when piping output
 build_dir=$1
 cache_dir=$2
 env_dir=$3
-app_dir=$build_dir/cctrlapp
+app_dir=$build_dir
 
 bp_dir=$(cd $(dirname $0); cd ..; pwd)
 
@@ -56,6 +56,8 @@ status "Bundle meteor App"
 mkdir -p $app_dir
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $app_dir 2>&1 | indent
 status "App bundled"
+# build creates /bundle subdirectory
+$app_dir=$app_dir/bundle
 
 # remove build files
 #status "Remove build files"
@@ -101,8 +103,8 @@ cd $build_dir
 
 if [ ! -e $build_dir/Procfile ]; then
   status "Create Procfile"
-  echo 'web: MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node cctrlapp/main.js' > $build_dir/Procfile
-  status 'web: MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node cctrlapp/main.js' 
+  echo 'web: MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node $app_dir/main.js' > $build_dir/Procfile
+  status 'web: MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node $app_dir/main.js' 
 else 
   status "Use existing Procfile"
 fi
