@@ -103,8 +103,8 @@ cd $build_dir
 
 if [ ! -e $build_dir/Procfile ]; then
   status "Create Procfile"
-  echo 'web: MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node $app_dir/main.js' > $build_dir/Procfile
-  status 'web: MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node $app_dir/main.js' 
+  echo 'web: cd bundle; MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node main.js' > $build_dir/Procfile
+  status 'web: cd bundle; MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node main.js' 
 else 
   status "Use existing Procfile"
 fi
