@@ -82,7 +82,7 @@ cd $build_dir
 # bundle meteor app
 status "Bundle meteor App"
 mkdir -p $build_dir/cctrlapp
-HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" bundle --directory $build_dir/cctrlapp 2>&1 | indent
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $build_dir/cctrlapp 2>&1 | indent
 status "App bundled"
 
 # remove build files
