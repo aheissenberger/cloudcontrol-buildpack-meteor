@@ -57,7 +57,7 @@ mkdir -p $app_dir
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $app_dir 2>&1 | indent
 status "App bundled"
 # build creates /bundle subdirectory
-$app_dir=$app_dir/bundle
+app_dir=$app_dir/bundle
 
 # remove build files
 #status "Remove build files"
