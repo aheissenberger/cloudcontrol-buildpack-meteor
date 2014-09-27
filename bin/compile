@@ -24,37 +24,6 @@ else
    semver_range="null"
 fi
 
-# Resolve node version using semver.io
-node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
-
-# Recommend using semver ranges in a safe manner
-if [ "$semver_range" == "null" ]; then
-  #protip "Specify a node version in package.json"
-  semver_range=""
-elif [ "$semver_range" == "*" ]; then
-  protip "Avoid using semver ranges like '*' in engines.node"
-elif [ ${semver_range:0:1} == ">" ]; then
-  protip "Avoid using semver ranges starting with '>' in engines.node"
-fi
-
-# Output info about requested range and resolved node version
-if [ "$semver_range" == "" ]; then
-  status "Defaulting to latest stable node: $node_version"
-else
-  status "Requested node range:  $semver_range"
-  status "Resolved node version: $node_version"
-fi
-
-status "Downloading and installing node"
-#node_url=http://nodejs.org/dist/v$node_version/node-v$node_version-linux-x64.tar.gz
-#curl $node_url -s -o - | tar xzf - -C $build_dir
-
-# Move node (and npm) into ./vendor and make them executable
-#mkdir -p $build_dir/vendor
-#mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
-#chmod +x $build_dir/vendor/node/bin/*
-#PATH=$build_dir/vendor/node/bin:$PATH
-
 # install meteor
 status "Installing meteor"
 # Using different folder to prevent install script form deleting packages file
@@ -89,6 +58,37 @@ status "App bundled"
 # remove build files
 status "Remove build files"
 find . -maxdepth 1 -not -name 'vendor' -not -name 'cctrlapp' -not -name '..' -not -name '.' | xargs rm -fr
+
+# Resolve node version using semver.io
+node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
+
+# Recommend using semver ranges in a safe manner
+if [ "$semver_range" == "null" ]; then
+  #protip "Specify a node version in package.json"
+  semver_range=""
+elif [ "$semver_range" == "*" ]; then
+  protip "Avoid using semver ranges like '*' in engines.node"
+elif [ ${semver_range:0:1} == ">" ]; then
+  protip "Avoid using semver ranges starting with '>' in engines.node"
+fi
+
+# Output info about requested range and resolved node version
+if [ "$semver_range" == "" ]; then
+  status "Defaulting to latest stable node: $node_version"
+else
+  status "Requested node range:  $semver_range"
+  status "Resolved node version: $node_version"
+fi
+
+status "Downloading and installing node"
+node_url=http://nodejs.org/dist/v$node_version/node-v$node_version-linux-x64.tar.gz
+curl $node_url -s -o - | tar xzf - -C $build_dir
+
+# Move node (and npm) into ./vendor and make them executable
+mkdir -p $build_dir/vendor
+mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
+chmod +x $build_dir/vendor/node/bin/*
+PATH=$build_dir/vendor/node/bin:$PATH
 
 if [ ! -e $build_dir/Procfile ]; then
   status "Create Procfile"
