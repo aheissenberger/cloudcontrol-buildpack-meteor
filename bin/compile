@@ -103,12 +103,16 @@ if [ ! -e $build_dir/Procfile ]; then
   status "Create Procfile"
 #  echo 'web: cd bundle; MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node main.js' > $build_dir/Procfile
   echo 'web: cd bundle; node main.js' > $build_dir/Procfile
-  status 'web: cd bundle; MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}} node main.js' 
+  status 'web: cd bundle; node main.js' 
 else 
   status "Use existing Procfile"
 fi
 # Update the PATH
 status "Building runtime environment"
-mkdir -p $build_dir/.profile.d
-echo 'export PATH=$HOME/vendor/node/bin:$HOME/bin:$HOME/node_modules/.bin:$PATH' >> $build_dir/.profile.d/meteorjs.sh
-echo 'export MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}}' >> $build_dir/.profile.d/meteorjs.sh
+PROFILE_PATH="$BUILD_DIR/.profile.d/meteorjs.sh"
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH=$HOME/vendor/node/bin:$HOME/bin:$HOME/node_modules/.bin:$PATH' >> $PROFILE_PATH
+echo 'export MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}}' >> $PROFILE_PATH
+echo 'if [ -n "$MONGOLAB_URI" ] && [ -n "$MONGO_OPLOG_CRED" ]; then' >> $PROFILE_PATH
+echo '[[ "$MONGOLAB_URI" =~ (mongodb://)(.*)(\@.*) ]] && export MONGO_OPLOG_URL=${BASH_REMATCH[1]}${MONGO_OPLOG_CRED}${BASH_REMATCH[3]}' >> $PROFILE_PATH
+echo 'fi' >> $PROFILE_PATH
