@@ -55,7 +55,7 @@ mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
 chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
 
-# install meteorite
+# install meteor
 status "Installing meteor"
 # Using different folder to prevent install script form deleting packages file
 VENDORED_METEOR="$cache_dir/meteor"
@@ -68,20 +68,16 @@ else
   status "Meteor from Cache"
 fi
 
-status "Install meteorite"
-npm install -g meteorite
-status "Meteorite installed"
-
 # Run subsequent node/npm commands from the build path
 cd $build_dir 
 
 # 
-status "Install Packages"
-HOME="$VENDORED_METEOR" mrt install --force | indent
-status "Packages installed"
+#status "Install Packages"
+#HOME="$VENDORED_METEOR" mrt install --force | indent
+#status "Packages installed"
 
 # add "vendor" to ignored directory
-sed -i 's:var ignoreFiles = \[:var ignoreFiles = \[ /\^vendor\\/\$/ , /\^cctrlapp\\/\$/ ,:g' $VENDORED_METEOR/.meteor/tools/latest/tools/bundler.js
+sed -i 's:var ignoreFiles = \[:var ignoreFiles = \[ /\^vendor\\/\$/ , /\^cctrlapp\\/\$/ ,:g' $VENDORED_METEOR/.meteor/packages/meteor-tool/.1.0.32.yuellp++os.osx.x86_64+web.browser+web.cordova/meteor-tool-os.osx.x86_64/tools/bundler.js
 
 # bundle meteor app
 status "Bundle meteor App"
