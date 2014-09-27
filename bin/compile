@@ -37,18 +37,10 @@ if [ ! -d "$VENDORED_METEOR" ]; then
 else
   status "Meteor from Cache"
 fi
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version
 
 # Run subsequent node/npm commands from the build path
 cd $build_dir 
-
-# 
-#status "Install Packages"
-#HOME="$VENDORED_METEOR" mrt install --force | indent
-#status "Packages installed"
-
-# add "vendor" to ignored directory
-#status "add vendor to ignored directory"
-#sed -i 's:var ignoreFiles = \[:var ignoreFiles = \[ /\^vendor\\/\$/ , /\^cctrlapp\\/\$/ ,:g' $VENDORED_METEOR/.meteor/packages/meteor-tool/1.0.32/meteor-tool-os.linux.x86_64/tools/bundler.js
 
 # bundle meteor app
 status "Bundle meteor App"
@@ -58,10 +50,6 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $app
 status "App bundled"
 # build creates /bundle subdirectory
 app_dir=$app_dir/bundle
-
-# remove build files
-#status "Remove build files"
-#find . -maxdepth 1 -not -name 'vendor' -not -name 'cctrlapp' -not -name '..' -not -name '.' | xargs rm -fr
 
 # Resolve node version using semver.io
 node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
@@ -95,8 +83,6 @@ chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
 
 status "npm install"
-ls -la $app_dir
-ls -la $app_dir/programs
 cd $app_dir/programs/server
 npm install
 cd $build_dir
