@@ -31,9 +31,10 @@ else
   status "Meteor from Cache"
 fi
 status "get required meteor version from app"
-[[ `cat $build_dir/.meteor/release` =~ METEOR\@([0-9\.]+) ]] && app_version=${BASH_REMATCH[1]}
+cd $build_dir
+[[ `cat .meteor/release` =~ METEOR\@([0-9\.]+) ]] && app_version=${BASH_REMATCH[1]}
 if [ -z "$app_version" ]; then
-   cd $build_dir
+   status "change meteor to version: $app_version" 
    HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update --release $app_version
 fi
 
