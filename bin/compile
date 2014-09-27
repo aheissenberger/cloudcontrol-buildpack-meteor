@@ -18,13 +18,6 @@ source $bp_dir/bin/common.sh
 # Output npm debug info on error
 trap cat_npm_debug_log ERR
 
-# Look in package.json's engines.node field for a semver range
-if [ -e $build_dir/package.json ]; then
-   semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
-else
-   semver_range="null"
-fi
-
 # install meteor
 status "Installing meteor"
 # Using different folder to prevent install script form deleting packages file
@@ -37,6 +30,13 @@ if [ ! -d "$VENDORED_METEOR" ]; then
 else
   status "Meteor from Cache"
 fi
+status "get required meteor version from app"
+[[ `cat .meteor/release` =~ METEOR\@([0-9\.]+) ]] && app_version=${BASH_REMATCH[1]}
+if [ -z "$app_version" ]; then
+   cd $build_dir
+   HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update --release $app_version
+fi
+
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version
 
 # Run subsequent node/npm commands from the build path
@@ -50,6 +50,13 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $app
 status "App bundled"
 # build creates /bundle subdirectory
 app_dir=$app_dir/bundle
+
+# Look in package.json's engines.node field for a semver range
+if [ -e $build_dir/package.json ]; then
+   semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
+else
+   semver_range="null"
+fi
 
 # Resolve node version using semver.io
 node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
