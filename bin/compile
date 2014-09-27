@@ -46,14 +46,14 @@ else
 fi
 
 status "Downloading and installing node"
-node_url=http://nodejs.org/dist/v$node_version/node-v$node_version-linux-x64.tar.gz
-curl $node_url -s -o - | tar xzf - -C $build_dir
+#node_url=http://nodejs.org/dist/v$node_version/node-v$node_version-linux-x64.tar.gz
+#curl $node_url -s -o - | tar xzf - -C $build_dir
 
 # Move node (and npm) into ./vendor and make them executable
-mkdir -p $build_dir/vendor
-mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
-chmod +x $build_dir/vendor/node/bin/*
-PATH=$build_dir/vendor/node/bin:$PATH
+#mkdir -p $build_dir/vendor
+#mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
+#chmod +x $build_dir/vendor/node/bin/*
+#PATH=$build_dir/vendor/node/bin:$PATH
 
 # install meteor
 status "Installing meteor"
@@ -77,6 +77,7 @@ cd $build_dir
 #status "Packages installed"
 
 # add "vendor" to ignored directory
+status "add vendor to ignored directory"
 sed -i 's:var ignoreFiles = \[:var ignoreFiles = \[ /\^vendor\\/\$/ , /\^cctrlapp\\/\$/ ,:g' $VENDORED_METEOR/.meteor/packages/meteor-tool/1.0.32/meteor-tool-os.linux.x86_64/tools/bundler.js
 
 # bundle meteor app
