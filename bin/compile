@@ -30,14 +30,18 @@ if [ ! -d "$VENDORED_METEOR" ]; then
 else
   status "Meteor from Cache"
 fi
-status "get required meteor version from app"
-cd $build_dir
-[[ `cat .meteor/release` =~ METEOR\@([0-9\.]+) ]] && app_version=${BASH_REMATCH[1]}
-if [ -z "$app_version" ]; then
-   status "change meteor to version: $app_version" 
-   HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update --release $app_version
-fi
+status "Meteor version on server"
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version
 
+#status "get required meteor version from app"
+cd $build_dir
+#[[ `cat .meteor/release` =~ METEOR\@([0-9\.]+) ]] && app_version=${BASH_REMATCH[1]}
+#if [ -z "$app_version" ]; then
+#   status "change meteor to version: $app_version" 
+#   HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update --release $app_version
+#fi
+
+status "Meteor version used by app"
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version
 
 # Run subsequent node/npm commands from the build path
