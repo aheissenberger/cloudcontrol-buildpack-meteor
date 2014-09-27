@@ -31,14 +31,18 @@ $ cctrlapp APP_NAME/default deploy
 oplog support
 -------------
 oplog support is only aviable with [MongoLab's ADDON](https://www.cloudcontrol.com/add-ons/mongolab) except for the sandbox version.
-# [Create a user with oplog read access](http://docs.mongolab.com/oplog/)
-# add the credetials USERNAME:PASSWORD to the deployment
+1. [Create a user with oplog read access](http://docs.mongolab.com/oplog/)
+2. add the credetials USERNAME:PASSWORD to the deployment
 ~~~bash
 $ cctrlapp APP_NAME/default addon.add mongolab.sharedsinglesmall
 $ cctrlapp APP_NAME/default config.add MONGO_OPLOG_CRED=USERNAME:PASSWORD
 $ cctrlapp APP_NAME/default deploy
 ~~~
-do not forget to remove all other mongo database addons.
+do not forget to remove all other mongo database addons - e.g.
+~~~bash
+cctrlapp mjs002/default addon.remove mongosoup.sandbox
+~~~
+
 
 Node.js and npm versions (OPTIONAL - defaults to stable version)
 ------------------------------------
