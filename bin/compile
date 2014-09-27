@@ -113,6 +113,6 @@ PROFILE_PATH="$build_dir/.profile.d/meteorjs.sh"
 mkdir -p $(dirname $PROFILE_PATH)
 echo 'export PATH=$HOME/vendor/node/bin:$HOME/bin:$HOME/node_modules/.bin:$PATH' >> $PROFILE_PATH
 echo 'export MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}}' >> $PROFILE_PATH
-#echo 'if [ -n "$MONGOLAB_URI" ] && [ -n "$MONGO_OPLOG_CRED" ]; then' >> $PROFILE_PATH
-#echo '[[ "$MONGOLAB_URI" =~ (mongodb://)(.*)(\@.*) ]] && export MONGO_OPLOG_URL=${BASH_REMATCH[1]}${MONGO_OPLOG_CRED}${BASH_REMATCH[3]}' >> $PROFILE_PATH
-#echo 'fi' >> $PROFILE_PATH
+echo 'if [ -n "$MONGOLAB_URI" ] && [ -n "$MONGO_OPLOG_CRED" ]; then' >> $PROFILE_PATH
+echo '[[ "$MONGOLAB_URI" =~ (mongodb://)(.*)(\@.*) ]] && export MONGO_OPLOG_URL=${BASH_REMATCH[1]}${MONGO_OPLOG_CRED}${BASH_REMATCH[3]}' >> $PROFILE_PATH
+echo 'fi' >> $PROFILE_PATH
