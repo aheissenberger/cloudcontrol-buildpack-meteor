@@ -91,6 +91,8 @@ chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
 
 status "npm install"
+ls -la $build_dir
+ls -la $build_dir/programs
 cd $build_dir/programs/server
 npm install
 cd $build_dir
