@@ -75,7 +75,7 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios an
 
 # Now on to bundling. Don't put the bundle in $APP_CHECKOUT_DIR, or it will
 # recurse, trying to bundle up its own bundling.
-BUNDLE_DEST=`mktemp -d "/build-XXXX"`
+BUNDLE_DEST=`mktemp -d `
 
 mkdir -p $app_dir
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $BUNDLE_DEST 2>&1 | indent
@@ -133,6 +133,12 @@ status "npm install"
 cd $app_dir/programs/server
 npm install
 cd $build_dir
+
+# If we use npm, run npm install.
+if [ -e "$app_dir"/programs/server/package.json ]; then
+  cd "$app_dir"/programs/server && npm install
+fi
+
 
 if [ ! -e $build_dir/Procfile ]; then
   status "Create Procfile"
