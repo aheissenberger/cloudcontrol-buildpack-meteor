@@ -81,7 +81,7 @@ mkdir -p $app_dir
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $BUNDLE_DEST 2>&1 | indent
 status "App bundled"
 # build creates /bundle subdirectory
-mv $BUNDLE_DEST $app_dir
+mv "$BUNDLE_DEST/bundle" "$app_dir/bundle"
 app_dir=$app_dir/bundle
 rmdir $BUNDLE_DEST
 
