@@ -111,6 +111,7 @@ fi
 status "Building runtime environment"
 PROFILE_PATH="$build_dir/.profile.d/meteorjs.sh"
 mkdir -p $(dirname $PROFILE_PATH)
+echo 'export ROOT_URL=http://ahbpmeteor.cloudcontrolled.com/' >> $PROFILE_PATH
 echo 'export PATH=$HOME/vendor/node/bin:$HOME/bin:$HOME/node_modules/.bin:$PATH' >> $PROFILE_PATH
 echo 'export MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}}' >> $PROFILE_PATH
 echo 'if [ -n "$MONGOLAB_URI" ] && [ -n "$MONGO_OPLOG_CRED" ]; then' >> $PROFILE_PATH
