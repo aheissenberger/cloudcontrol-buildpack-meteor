@@ -41,14 +41,31 @@ $ cctrlapp APP_NAME/default deploy
 ~~~
 do not forget to remove all other mongo database addons - e.g.
 ~~~bash
-cctrlapp APP_NAME/default addon.remove mongosoup.sandbox
+$ cctrlapp APP_NAME/default addon.remove mongosoup.sandbox
 ~~~
 if you switch to a MonoLab Sandbox remove the config:
 ~~~bash
 $ cctrlapp APP_NAME/default config.remove MONGO_OPLOG_CRED
 ~~~
 
+change ROOT_URL (OPTIONAL - defaults to http://APPNAME.cloudcontrolled.com )
+------------------------------------
 
+from inside meteor [http://docs.meteor.com/#meteor_absoluteurl]:
+```javascript
+Meteor.absoluteUrl.defaultOptions.rootUrl = "http://mydomain.com"
+```
+or by overiding ENVIROMENT Variable ROOT_URL
+
+add ENVIROMENT Variables (OPTIONAL - defaults to stable version)
+------------------------------------
+
+you can add them by creating e.g. a file with appname.sh in a directory under your app root directory.
+e.g.:
+```bash
+mkdir APPDIR/.profile.d
+echo "export MAIL_URL='smtp://user:password@mailhost:port/'" > APPDIR/.profile.d/APPNAME.sh
+```
 
 Node.js and npm versions (OPTIONAL - defaults to stable version)
 ------------------------------------

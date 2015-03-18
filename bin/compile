@@ -156,5 +156,6 @@ echo 'export MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}}' >> $PROFIL
 echo 'if [ -n "$MONGOLAB_URI" ] && [ -n "$MONGO_OPLOG_CRED" ]; then' >> $PROFILE_PATH
 echo '[[ "$MONGOLAB_URI" =~ (mongodb://)(.*)(\@.*/)(.*) ]] && export MONGO_OPLOG_URL=${BASH_REMATCH[1]}${MONGO_OPLOG_CRED}${BASH_REMATCH[3]}local' >> $PROFILE_PATH
 echo 'fi' >> $PROFILE_PATH
+status "~/.profile.d/meteorjs.sh:"
 cat $PROFILE_PATH
 
