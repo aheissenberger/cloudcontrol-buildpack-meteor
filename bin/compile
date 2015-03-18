@@ -72,7 +72,7 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios an
     if [  ! -f settings.json ]; then 
       touch "${build_dir}/settings.json"
     fi
-    HOME="$VENDORED_METEOR" timeout -s9 60 "$VENDORED_METEOR/.meteor/meteor" --settings settings.json || true
+    HOME="$VENDORED_METEOR" timeout -s9 30 "$VENDORED_METEOR/.meteor/meteor" --settings settings.json || true
 #fi
 # </hack>
 
@@ -148,7 +148,7 @@ if [ -e "$app_dir"/programs/server/package.json ]; then
     status "copy from cache"
     cp -R "$NODE_DEST/node_modules/" $app_dir/programs/server/
   fi
-  ./npm install
+  npm install
   # save mode-modules to cache
   cp -R $app_dir/programs/server/node_modules/ $NODE_DEST
 fi
