@@ -143,7 +143,7 @@ if [ -e "$app_dir"/programs/server/package.json ]; then
   status "Setup npm node_modules"
   cd $app_dir/programs/server
   if [ ! -d "$NODE_DEST/node_modules/" ]; then
-    #ls -la
+    status "install from scratch"
   else
     status "copy from cache"
     cp -R "$NODE_DEST/node_modules/" $app_dir/programs/server/
