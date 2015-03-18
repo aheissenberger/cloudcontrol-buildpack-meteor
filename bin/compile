@@ -136,16 +136,25 @@ if [ ! -e $build_dir/Procfile ]; then
 else 
   status "Use existing Procfile"
 fi
+
 # get default URL of host
-printenv
+DEP_NAME_ARRAY=(${DEP_NAME//\// })
+if [ "${DEP_NAME_ARRAY[1]}" == "default" ]; then
+  DEP_HOSTNAME="${DEP_NAME_ARRAY[0]}"
+else
+  DEP_HOSTNAME="${DEP_NAME_ARRAY[1]}-${DEP_NAME_ARRAY[0]}"
+fi
+ROOT_URL="http://${DEP_HOSTNAME}.${DOMAIN}/"
 
 # Update the PATH
 status "Building runtime environment"
 PROFILE_PATH="$build_dir/.profile.d/meteorjs.sh"
 mkdir -p $(dirname $PROFILE_PATH)
-echo 'export ROOT_URL=http://ahbpmeteor.cloudcontrolled.com/' >> $PROFILE_PATH
+echo "export ROOT_URL=${ROOT_URL}" >> $PROFILE_PATH
 echo 'export PATH=$HOME/vendor/node/bin:$HOME/bin:$HOME/node_modules/.bin:$PATH' >> $PROFILE_PATH
 echo 'export MONGO_URL=${MONGO_URL:-${MONGOSOUP_URL:-$MONGOLAB_URI}}' >> $PROFILE_PATH
 echo 'if [ -n "$MONGOLAB_URI" ] && [ -n "$MONGO_OPLOG_CRED" ]; then' >> $PROFILE_PATH
 echo '[[ "$MONGOLAB_URI" =~ (mongodb://)(.*)(\@.*/)(.*) ]] && export MONGO_OPLOG_URL=${BASH_REMATCH[1]}${MONGO_OPLOG_CRED}${BASH_REMATCH[3]}local' >> $PROFILE_PATH
 echo 'fi' >> $PROFILE_PATH
+cat $PROFILE_PATH
+
