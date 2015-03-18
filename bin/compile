@@ -69,6 +69,9 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios an
 # of glibc (contained in cedar-14)
 #if [ -n "${BUILDPACK_PRELAUNCH_METEOR+1}" ]; then 
     status "Pre-launching Meteor to create packages assets and prevent bundling from failing"
+    if [  ! -f settings.json ]; then 
+      touch settings.json
+    fi
     HOME="$VENDORED_METEOR" timeout -s9 60 "$VENDORED_METEOR/.meteor/meteor" --settings settings.json || true
 #fi
 # </hack>
@@ -114,18 +117,20 @@ else
 fi
 
 status "Downloading and installing node"
+NODE_DEST=`mktemp -d `
+
 node_url=http://nodejs.org/dist/v$node_version/node-v$node_version-linux-x64.tar.gz
-curl $node_url -sS -o - | tar xzf - -C $build_dir
+curl $node_url -sS -o - | tar xzf - -C $NODE_DEST
 
 # Move node (and npm) into ./vendor and make them executable
 mkdir -p $build_dir/vendor
-mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
-chmod +x $build_dir/vendor/node/bin/*
-PATH=$build_dir/vendor/node/bin:$PATH
+mv $NODE_DEST/node-v$node_version-linux-x64 "$cache_dir/node"
+chmod +x "$cache_dir/node"/bin/*
 
 # Export some environment variables for npm to use when compiling stuff.
-export npm_config_prefix="$build_dir/vendor/node"
-export CPATH="$build_dir/vendor/node/include"
+PATH="$cache_dir/node"/bin:$PATH
+export npm_config_prefix="$cache_dir/node"
+export CPATH="$cache_dir/node/include"
 export CPPPATH="$CPATH"
 
 
@@ -149,7 +154,7 @@ else
   status "Use existing Procfile"
 fi
 
-# get default URL of host
+# get default URL of cc host
 DEP_NAME_ARRAY=(${DEP_NAME//\// })
 if [ "${DEP_NAME_ARRAY[1]}" == "default" ]; then
   DEP_HOSTNAME="${DEP_NAME_ARRAY[0]}"
