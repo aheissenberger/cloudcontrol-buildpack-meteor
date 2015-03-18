@@ -70,7 +70,7 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios an
 #if [ -n "${BUILDPACK_PRELAUNCH_METEOR+1}" ]; then 
     status "Pre-launching Meteor to create packages assets and prevent bundling from failing"
     if [  ! -f settings.json ]; then 
-      touch settings.json
+      touch "${build_dir}/settings.json"
     fi
     HOME="$VENDORED_METEOR" timeout -s9 60 "$VENDORED_METEOR/.meteor/meteor" --settings settings.json || true
 #fi
@@ -116,21 +116,26 @@ else
   status "Resolved node version: $node_version"
 fi
 
-status "Downloading and installing node"
-NODE_DEST=`mktemp -d `
+status "Setup node.js"
+NODE_DEST="$cache_dir/node"
+if [ ! -d "${NODE_DEST}" ]; then
+  status "Downloading and installing node.js"
+  mkdir -p "${NODE_DEST}"
 
-node_url=http://nodejs.org/dist/v$node_version/node-v$node_version-linux-x64.tar.gz
-curl $node_url -sS -o - | tar xzf - -C $NODE_DEST
+  node_url=http://nodejs.org/dist/v$node_version/node-v$node_version-linux-x64.tar.gz
+  curl $node_url -sS -o - | tar xzf - -C $NODE_DEST
 
-# Move node (and npm) into ./vendor and make them executable
-mkdir -p $build_dir/vendor
-mv $NODE_DEST/node-v$node_version-linux-x64 "$cache_dir/node"
-chmod +x "$cache_dir/node"/bin/*
+  # Move node (and npm) into ./vendor and make them executable
+  cp $NODE_DEST/node-v$node_version-linux-x64 "$build_dir/vendor/node"
+  chmod +x "$build_dir/vendor/node"/bin/*
+else
+  status "Copy node.js from Cache"
+fi
 
 # Export some environment variables for npm to use when compiling stuff.
-PATH="$cache_dir/node"/bin:$PATH
-export npm_config_prefix="$cache_dir/node"
-export CPATH="$cache_dir/node/include"
+PATH="$build_dir/vendor/node"/bin:$PATH
+export npm_config_prefix="$build_dir/vendor/node"
+export CPATH="$build_dir/vendor/node/include"
 export CPPPATH="$CPATH"
 
 
