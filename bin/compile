@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# works partly
 
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
