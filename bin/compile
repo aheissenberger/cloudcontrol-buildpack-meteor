@@ -72,7 +72,7 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios an
     if [  ! -f settings.json ]; then 
       touch "${build_dir}/settings.json"
     fi
-    HOME="$VENDORED_METEOR" timeout -s9 20 "$VENDORED_METEOR/.meteor/meteor" --settings settings.json || true
+    HOME="$VENDORED_METEOR" timeout -s9 60 "$VENDORED_METEOR/.meteor/meteor" --settings settings.json || true
 #fi
 # </hack>
 
