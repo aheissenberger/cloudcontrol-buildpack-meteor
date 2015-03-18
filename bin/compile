@@ -20,19 +20,22 @@ source $bp_dir/bin/common.sh
 trap cat_npm_debug_log ERR
 
 # install meteor
-status "Installing meteor"
+status "Setup meteor"
 # Using different folder to prevent install script form deleting packages file
 VENDORED_METEOR="$cache_dir/meteor"
+MFROMCACHE=0
 mkdir -p $cache_dir
 if [ ! -d "$VENDORED_METEOR" ]; then
+  status "Install meteor"
   mkdir -p $VENDORED_METEOR
   curl -sS https://install.meteor.com | HOME="$VENDORED_METEOR" /bin/sh
   status "Meteor installed" | indent
 else
   status "Meteor from Cache"
+  MFROMCACHE=1
 fi
-status "Meteor version on server"
-HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version
+MVERSION = `HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version`
+status "Meteor version on server: ${MVERSION}"
 
 #status "get required meteor version from app"
 cd $build_dir
@@ -42,8 +45,15 @@ cd $build_dir
 #   HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update --release $app_version
 #fi
 
-status "Meteor version used by app"
-HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version
+APP_MVERSION = `HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version`
+status "Meteor version used by app: ${APP_MVERSION}"
+
+# update meteor from cache if app needs different version
+if [ "$MVERSION" != "$APP_MVERSION" ]; then
+  status "Update meteor"
+  cd $VENDORED_METEOR
+  HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update
+fi
 
 # Run subsequent node/npm commands from the build path
 cd $build_dir 
