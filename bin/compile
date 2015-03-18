@@ -3,7 +3,7 @@
 
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
-set -x          # enable debugging
+#set -x          # enable debugging
 
 # Configure directories
 build_dir=$1
@@ -139,26 +139,21 @@ export npm_config_prefix="$build_dir/vendor/node"
 export CPATH="$build_dir/vendor/node/include"
 export CPPPATH="$CPATH"
 
-
-status "Setup npm node_modules"
-cd $app_dir/programs/server
-if [ ! -d "$NODE_DEST/node_modules/" ]; then
-  ls -la
-else
-  status "copy from cache"
-  cp -Rv "$NODE_DEST/node_modules/" $app_dir/programs/server/
+if [ -e "$app_dir"/programs/server/package.json ]; then
+  status "Setup npm node_modules"
+  cd $app_dir/programs/server
+  if [ ! -d "$NODE_DEST/node_modules/" ]; then
+    ls -la
+  else
+    status "copy from cache"
+    cp -R "$NODE_DEST/node_modules/" $app_dir/programs/server/
+  fi
+  npm install
+  # save mode-modules to cache
+  cp -R $app_dir/programs/server/node_modules/ $NODE_DEST
 fi
-npm install
-# save mode-modules to cache
-cp -R $app_dir/programs/server/node_modules/ $NODE_DEST
-
 
 cd $build_dir
-# If we use npm, run npm install.
-if [ -e "$app_dir"/programs/server/package.json ]; then
-  cd "$app_dir"/programs/server && npm install
-fi
-
 
 if [ ! -e $build_dir/Procfile ]; then
   status "Create Procfile"
