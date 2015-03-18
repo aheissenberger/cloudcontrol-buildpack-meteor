@@ -146,7 +146,7 @@ if [ ! -d "$NODE_DEST/node_modules/" ]; then
   ls -la
 else
   status "copy from cache"
-  cp -Rv "$NODE_DEST/node_modules"/* $app_dir/programs/server/node_modules
+  cp -Rv "$NODE_DEST/node_modules/" $app_dir/programs/server/
 fi
 npm install
 # save mode-modules to cache
