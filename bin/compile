@@ -3,7 +3,7 @@
 
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
-# set -x          # enable debugging
+set -x          # enable debugging
 
 # Configure directories
 build_dir=$1
@@ -115,13 +115,19 @@ fi
 
 status "Downloading and installing node"
 node_url=http://nodejs.org/dist/v$node_version/node-v$node_version-linux-x64.tar.gz
-curl $node_url -s -o - | tar xzf - -C $build_dir
+curl $node_url -sS -o - | tar xzf - -C $build_dir
 
 # Move node (and npm) into ./vendor and make them executable
 mkdir -p $build_dir/vendor
 mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
 chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
+
+# Export some environment variables for npm to use when compiling stuff.
+export npm_config_prefix="$build_dir/vendor/node"
+export CPATH="$build_dir/vendor/node/include"
+export CPPPATH="$CPATH"
+
 
 status "npm install"
 cd $app_dir/programs/server
