@@ -34,7 +34,7 @@ else
   status "Meteor from Cache"
   MFROMCACHE=1
 fi
-MVERSION = `HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version`
+MVERSION=`HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version`
 status "Meteor version on server: ${MVERSION}"
 
 #status "get required meteor version from app"
@@ -45,7 +45,7 @@ cd $build_dir
 #   HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update --release $app_version
 #fi
 
-APP_MVERSION = `HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version`
+APP_MVERSION=`HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version`
 status "Meteor version used by app: ${APP_MVERSION}"
 
 # update meteor from cache if app needs different version
