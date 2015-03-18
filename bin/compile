@@ -143,12 +143,12 @@ if [ -e "$app_dir"/programs/server/package.json ]; then
   status "Setup npm node_modules"
   cd $app_dir/programs/server
   if [ ! -d "$NODE_DEST/node_modules/" ]; then
-    ls -la
+    #ls -la
   else
     status "copy from cache"
     cp -R "$NODE_DEST/node_modules/" $app_dir/programs/server/
   fi
-  npm install
+  ./npm install
   # save mode-modules to cache
   cp -R $app_dir/programs/server/node_modules/ $NODE_DEST
 fi
