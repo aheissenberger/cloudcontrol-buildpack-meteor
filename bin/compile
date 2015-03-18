@@ -25,7 +25,7 @@ VENDORED_METEOR="$cache_dir/meteor"
 mkdir -p $cache_dir
 if [ ! -d "$VENDORED_METEOR" ]; then
   mkdir -p $VENDORED_METEOR
-  curl https://install.meteor.com | HOME="$VENDORED_METEOR" /bin/sh
+  curl -sS https://install.meteor.com | HOME="$VENDORED_METEOR" /bin/sh
   status "Meteor installed" | indent
 else
   status "Meteor from Cache"
