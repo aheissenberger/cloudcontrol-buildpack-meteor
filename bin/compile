@@ -61,6 +61,13 @@ cd $build_dir
 # bundle meteor app
 status "Bundle meteor App"
 
+# <hack issue='https://github.com/meteor/meteor/issues/2867'>
+# Temporary hack to address meteor failing to bundle if mobile targets are
+# included but server URL is not (issue #2).  Remove mobile targets. This
+# should be no-op for any builds that don't have mobile targets.
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios android
+# </hack>
+
 mkdir -p $app_dir
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $app_dir 2>&1 | indent
 status "App bundled"
