@@ -68,6 +68,17 @@ status "Bundle meteor App"
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios android
 # </hack>
 
+# <hack issue="https://github.com/meteor/meteor/issues/2796>
+# the root cause seems to be related to https://github.com/meteor/meteor/issues/2606
+# Also remember to use 'heroku stack:set cedar-14' to allow certain recompiled
+# packages to use the newer version memcpy that ships with a more recent version
+# of glibc (contained in cedar-14)
+if [ -n "${BUILDPACK_PRELAUNCH_METEOR+1}" ]; then 
+    status "Pre-launching Meteor to create packages assets and prevent bundling from failing"
+    HOME="$VENDORED_METEOR" timeout -s9 60 "$VENDORED_METEOR/.meteor/meteor" --settings settings.json || true
+fi
+# </hack>
+
 mkdir -p $app_dir
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $app_dir 2>&1 | indent
 status "App bundled"
