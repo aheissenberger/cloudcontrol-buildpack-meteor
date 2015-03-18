@@ -43,7 +43,7 @@ APP_MVERSION=`HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --versio
 status "Meteor version used by app: ${APP_MVERSION}"
 
 # update meteor from cache if app needs different version
-if [ "$MVERSIONx" != "$APP_MVERSION" ]; then
+if [ "$MVERSION" != "$APP_MVERSION" ]; then
   status "Update meteor"
   cd $VENDORED_METEOR
   HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update
@@ -130,7 +130,7 @@ else
 fi
 # Move node (and npm) into ./vendor and make them executable
 mkdir -p "$build_dir/vendor/node"
-cp -Rv "$NODE_DEST/node-v$node_version-linux-x64"/* "$build_dir/vendor/node"
+cp -R "$NODE_DEST/node-v$node_version-linux-x64"/* "$build_dir/vendor/node"
 chmod +x "${build_dir}/vendor/node"/bin/*
 
 # Export some environment variables for npm to use when compiling stuff.
@@ -140,11 +140,21 @@ export CPATH="$build_dir/vendor/node/include"
 export CPPPATH="$CPATH"
 
 
-status "npm install"
+status "Setup npm node_modules"
 cd $app_dir/programs/server
+if [ ! -d "$NODE_DEST/node_modules/" ]; then
+  ls -la
+else
+  status "copy from cache"
+  cp -Rv "$NODE_DEST/node_modules"/* $app_dir/programs/server/node_modules
+fi
 npm install
-cd $build_dir
+# save mode-modules to cache
+cp -Rv $app_dir/programs/server/node_modules/ $NODE_DEST
 
+exit 1
+
+cd $build_dir
 # If we use npm, run npm install.
 if [ -e "$app_dir"/programs/server/package.json ]; then
   cd "$app_dir"/programs/server && npm install
