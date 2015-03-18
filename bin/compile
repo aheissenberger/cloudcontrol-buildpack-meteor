@@ -136,6 +136,9 @@ if [ ! -e $build_dir/Procfile ]; then
 else 
   status "Use existing Procfile"
 fi
+# get default URL of host
+printenv
+
 # Update the PATH
 status "Building runtime environment"
 PROFILE_PATH="$build_dir/.profile.d/meteorjs.sh"
