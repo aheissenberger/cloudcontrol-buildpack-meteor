@@ -150,9 +150,8 @@ else
 fi
 npm install
 # save mode-modules to cache
-cp -Rv $app_dir/programs/server/node_modules/ $NODE_DEST
+cp -R $app_dir/programs/server/node_modules/ $NODE_DEST
 
-exit 1
 
 cd $build_dir
 # If we use npm, run npm install.
