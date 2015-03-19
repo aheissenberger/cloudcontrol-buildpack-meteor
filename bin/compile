@@ -103,7 +103,7 @@ meteor_tool="meteor-tool@1.0.43"
 meteor_tool_array=(${meteor_tool//\@/ })
 ls -la ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/
 cat ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/isopack.json
-node_os_path=$(cat ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/isopack.json  | $bp_dir/vendor/jq -r '."isopack-1".tools[0].path')
+node_os_path=$(cat ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/isopack.json  | $bp_dir/vendor/jq -r '.["isopack-1"].tools[0].path')
 node_os_path="${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/${node_os_path}/dev_bundle/bin/"
 node_version=$(${node_os_path}node -v)
 node_version=${node_version:1}
