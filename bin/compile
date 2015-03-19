@@ -92,19 +92,19 @@ rmdir $BUNDLE_DEST
 app_meteor_version=`cat $build_dir/.meteor/release`
 app_meteor_version_array=(${app_meteor_version//\@/ })
 
-# load meteor version
-HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --release ${node_version}
-
 # check meteor package database for path to node
 sql="SELECT content FROM main.releaseVersions WHERE track = \"METEOR\" AND version = \"${app_meteor_version_array[1]}\" LIMIT 1;"
 # TODO detect path to packages.data.db
-meteor_tool=$(echo $sql | sqlite3 -batch $VENDORED_METEOR/.meteor/package-metadata/v2.0.1/packages.data.db | jq -r ".tool")
+meteor_tool=$(echo $sql | sqlite3 -batch $VENDORED_METEOR/.meteor/package-metadata/v2.0.1/packages.data.db | $bp_dir/vendor/jq -r ".tool")
 meteor_tool_array=(${meteor_tool//\@/ })
-node_os_path=$(cat ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/isopack.json  | jq -r '."isopack-1".tools[0].path')
+node_os_path=$(cat ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/isopack.json  | $bp_dir/vendor/jq -r '."isopack-1".tools[0].path')
 node_os_path="${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/${node_os_path}/dev_bundle/bin/"
 node_version=$(${node_os_path}node -v)
 node_version=${node_version:1}
 npm_version=$(${node_os_path}npm -v)
+
+# load meteor version
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --release ${node_version}
 
 semver_range="${node_version}"
 
