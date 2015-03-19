@@ -3,7 +3,7 @@
 
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
-#set -x          # enable debugging
+set -x          # enable debugging
 
 # Configure directories
 build_dir=$1
@@ -88,11 +88,31 @@ mv "$BUNDLE_DEST/bundle" "$app_dir/bundle"
 app_dir=$app_dir/bundle
 rmdir $BUNDLE_DEST
 
+# get meteor version from APP
+app_meteor_version=`cat $build_dir/.meteor/release`
+app_meteor_version_array=(${app_meteor_version//\@/ })
+
+# load meteor version
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --release ${node_version}
+
+# check meteor package database for path to node
+sql="SELECT content FROM main.releaseVersions WHERE track = \"METEOR\" AND version = \"${app_meteor_version_array[1]}\" LIMIT 1;"
+# TODO detect path to packages.data.db
+meteor_tool=$(echo $sql | sqlite3 -batch $VENDORED_METEOR/.meteor/package-metadata/v2.0.1/packages.data.db | jq -r ".tool")
+meteor_tool_array=(${meteor_tool//\@/ })
+node_os_path=$(cat ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/isopack.json  | jq -r '."isopack-1".tools[0].path')
+node_os_path="${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/${node_os_path}/dev_bundle/bin/"
+node_version=$(${node_os_path}node -v)
+node_version=${node_version:1}
+npm_version=$(${node_os_path}npm -v)
+
+semver_range="${node_version}"
+
 # Look in package.json's engines.node field for a semver range
 if [ -e $build_dir/package.json ]; then
    semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
-else
-   semver_range="null"
+#else
+#   semver_range="null"
 fi
 
 # Resolve node version using semver.io
