@@ -110,7 +110,7 @@ node_version=${node_version:1}
 npm_version=$(${node_os_path}npm -v)
 
 # load meteor version
-HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --release ${node_version}
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --release ${app_meteor_version_array[1]}
 
 semver_range="${node_version}"
 
