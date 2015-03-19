@@ -95,7 +95,9 @@ app_meteor_version_array=(${app_meteor_version//\@/ })
 # check meteor package database for path to node
 sql="SELECT content FROM main.releaseVersions WHERE track = \"METEOR\" AND version = \"${app_meteor_version_array[1]}\" LIMIT 1;"
 # TODO detect path to packages.data.db
-meteor_tool=$(echo $sql | $bp_dir/vendor/sqlite3 -batch $VENDORED_METEOR/.meteor/package-metadata/v2.0.1/packages.data.db | $bp_dir/vendor/jq -r ".tool")
+ls -la $bp_dir/vendor
+apt-get -y install sqlite3
+meteor_tool=$(echo $sql | sqlite3 -batch $VENDORED_METEOR/.meteor/package-metadata/v2.0.1/packages.data.db | $bp_dir/vendor/jq -r ".tool")
 meteor_tool_array=(${meteor_tool//\@/ })
 node_os_path=$(cat ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/isopack.json  | $bp_dir/vendor/jq -r '."isopack-1".tools[0].path')
 node_os_path="${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/${node_os_path}/dev_bundle/bin/"
