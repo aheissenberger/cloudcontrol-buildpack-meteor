@@ -107,7 +107,7 @@ app_meteor_version_array=(${app_meteor_version//\@/ })
 
 # check meteor package database for path to node
 # TODO detect path to packages.data.db
-find_packagedb=find $VENDORED_METEOR/.meteor/package-metadata -type f -name "packages.data.db" -exec stat --format '%Y :%n' "{}" \; | sort -nr | cut -d: -f2- | head
+find_packagedb="find $VENDORED_METEOR/.meteor/package-metadata -type f -name 'packages.data.db' -exec stat --format '%Y :%n' \"{}\" \\; | sort -nr | cut -d: -f2- | head -n 1"
 packagesdb=$(${find_packagedb})
 #ls -la $bp_dir/vendor
 #$bp_dir/vendor/sqlite3
