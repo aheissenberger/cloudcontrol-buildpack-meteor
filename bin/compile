@@ -106,12 +106,16 @@ app_meteor_version=`cat $build_dir/.meteor/release`
 app_meteor_version_array=(${app_meteor_version//\@/ })
 
 # check meteor package database for path to node
-sql="SELECT content FROM main.releaseVersions WHERE track = \"METEOR\" AND version = \"${app_meteor_version_array[1]}\" LIMIT 1;"
 # TODO detect path to packages.data.db
+find_packagedb=find $VENDORED_METEOR/.meteor/package-metadata -type f -name "packages.data.db" -exec stat --format '%Y :%n' "{}" \; | sort -nr | cut -d: -f2- | head
+packagesdb=$(${find_packagedb})
 #ls -la $bp_dir/vendor
 #$bp_dir/vendor/sqlite3
 
-meteor_tool=$(echo $sql | $SQLITE3 -batch $VENDORED_METEOR/.meteor/package-metadata/v2.0.1/packages.data.db | $bp_dir/vendor/jq -r ".tool")
+# lookup node version for meteor tools in packages-metadata
+sql="SELECT content FROM main.releaseVersions WHERE track = \"METEOR\" AND version = \"${app_meteor_version_array[1]}\" LIMIT 1;"
+#meteor_tool=$(echo $sql | $SQLITE3 -batch $VENDORED_METEOR/.meteor/package-metadata/v2.0.1/packages.data.db | $bp_dir/vendor/jq -r ".tool")
+meteor_tool=$(echo $sql | $SQLITE3 -batch $packagesdb | $bp_dir/vendor/jq -r ".tool")
 #meteor_tool="meteor-tool@1.0.43"
 meteor_tool_array=(${meteor_tool//\@/ })
 node_os_path=$(cat ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/isopack.json  | $bp_dir/vendor/jq -r '.["isopack-1"].tools[0].path')
