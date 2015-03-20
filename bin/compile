@@ -3,7 +3,7 @@
 
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
-#set -x          # enable debugging
+set -x          # enable debugging
 
 # Configure directories
 build_dir=$1
@@ -76,6 +76,11 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios an
 #fi
 # </hack>
 
+# get meteor version from APP
+app_meteor_version=`cat $build_dir/.meteor/release`
+app_meteor_version_array=(${app_meteor_version//\@/ })
+
+
 # Now on to bundling. Don't put the bundle in $APP_CHECKOUT_DIR, or it will
 # recurse, trying to bundle up its own bundling.
 BUNDLE_DEST=`mktemp -d `
@@ -84,6 +89,10 @@ mkdir -p $app_dir
 HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" build --directory $BUNDLE_DEST 2>&1 | indent
 status "App bundled"
 # build creates /bundle subdirectory
+
+# clean up build dir
+rm -fr "$build_dir"/*
+
 mv "$BUNDLE_DEST/bundle" "$app_dir/bundle"
 app_dir=$app_dir/bundle
 rmdir $BUNDLE_DEST
@@ -100,10 +109,6 @@ if [  ! -f $SQLITE3 ]; then
   mv a.out $SQLITE3
   popd
 fi
-
-# get meteor version from APP
-app_meteor_version=`cat $build_dir/.meteor/release`
-app_meteor_version_array=(${app_meteor_version//\@/ })
 
 # check meteor package database for path to node
 
@@ -177,6 +182,9 @@ export npm_config_prefix="$build_dir/vendor/node"
 export CPATH="$build_dir/vendor/node/include"
 export CPPPATH="$CPATH"
 
+
+
+
 if [ -e "$app_dir"/programs/server/package.json ]; then
   status "Setup npm node_modules"
   cd $app_dir/programs/server
@@ -192,6 +200,8 @@ if [ -e "$app_dir"/programs/server/package.json ]; then
 fi
 
 cd $build_dir
+
+
 
 if [ ! -e $build_dir/Procfile ]; then
   status "Create Procfile"
