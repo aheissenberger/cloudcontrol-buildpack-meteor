@@ -90,7 +90,7 @@ rmdir $BUNDLE_DEST
 
 # build sqlite if not cached
 SQLITE3="$cache_dir/sqlite3"
-if [  ! -f $SQLITE ]; then
+if [  ! -f $SQLITE3 ]; then
   SQLITE3_DEST=`mktemp -d `
   sqlite3_url=http://www.sqlite.org/2015/sqlite-autoconf-3080803.tar.gz
   curl $sqlite3_url -sS -o - | tar xzf - -C $SQLITE3_DEST --strip 1
