@@ -28,6 +28,12 @@ $ cctrlapp APP_NAME/default push
 $ cctrlapp APP_NAME/default deploy
 ~~~
 
+Info
+----
+
+This error message is OK as we need to start meteor and kill it to create required assets for bundling:
+    /srv/tmp/custom_buildpack/bin/compile: line 75:   104 Killed                  HOME="$VENDORED_METEOR" timeout -s9 20 "$VENDORED_METEOR/.meteor/meteor" --settings settings.json
+
 oplog support
 -------------
 oplog support is only available with the [MongoLab's ADDON](https://www.cloudcontrol.com/add-ons/mongolab) except for the sandbox version.
