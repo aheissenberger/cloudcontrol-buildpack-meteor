@@ -88,6 +88,19 @@ mv "$BUNDLE_DEST/bundle" "$app_dir/bundle"
 app_dir=$app_dir/bundle
 rmdir $BUNDLE_DEST
 
+# build sqlite if not cached
+SQLITE3="$cache_dir/sqlite3"
+if [  ! -f $SQLITE ]; then
+  SQLITE3_DEST=`mktemp -d `
+  sqlite3_url=http://www.sqlite.org/2015/sqlite-autoconf-3080803.tar.gz
+  curl $sqlite3_url -sS -o - | tar xzf - -C $SQLITE3_DEST --strip 1
+  pushd "$SQLITE3_DEST"
+  gcc -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION shell.c sqlite3.c
+  chmod +x a.out
+  mv a.out $SQLITE3
+  popd
+fi
+
 # get meteor version from APP
 app_meteor_version=`cat $build_dir/.meteor/release`
 app_meteor_version_array=(${app_meteor_version//\@/ })
@@ -98,8 +111,8 @@ sql="SELECT content FROM main.releaseVersions WHERE track = \"METEOR\" AND versi
 #ls -la $bp_dir/vendor
 #$bp_dir/vendor/sqlite3
 
-#meteor_tool=$(echo $sql | $bp_dir/vendor/sqlite3 -batch $VENDORED_METEOR/.meteor/package-metadata/v2.0.1/packages.data.db | $bp_dir/vendor/jq -r ".tool")
-meteor_tool="meteor-tool@1.0.43"
+meteor_tool=$(echo $sql | $SQLITE3 -batch $VENDORED_METEOR/.meteor/package-metadata/v2.0.1/packages.data.db | $bp_dir/vendor/jq -r ".tool")
+#meteor_tool="meteor-tool@1.0.43"
 meteor_tool_array=(${meteor_tool//\@/ })
 node_os_path=$(cat ${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/isopack.json  | $bp_dir/vendor/jq -r '.["isopack-1"].tools[0].path')
 node_os_path="${VENDORED_METEOR}/.meteor/packages/${meteor_tool_array[0]}/${meteor_tool_array[1]}/${node_os_path}/dev_bundle/bin/"
