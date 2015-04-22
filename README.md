@@ -19,8 +19,8 @@ $ cctrlapp APP_NAME create custom --buildpack https://github.com/aheissenberger/
 Example
 -------
 ~~~bash
-$ meteor create --example wordplay
-$ cd wordplay
+$ meteor create --example todos
+$ cd todos
 $ cctrlapp APP_NAME create custom --buildpack https://github.com/aheissenberger/cloudcontrol-buildpack-meteor.git
 $ git init && git add . && git commit -m 'init'
 $ cctrlapp APP_NAME/default addon.add mongosoup.sandbox
