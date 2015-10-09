@@ -60,7 +60,7 @@ status "Bundle meteor App"
 # included but server URL is not (issue #2).  Remove mobile targets. This
 # should be no-op for any builds that don't have mobile targets.
 # HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios android
-for i in `cat .meteor/plattforms`
+for i in `cat .meteor/plattforms`; do
   if [ "$i" != "server" ] && [ "$i" != "browser"]; then
     HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform  $i
   fi
