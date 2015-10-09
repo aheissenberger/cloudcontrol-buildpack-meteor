@@ -61,7 +61,7 @@ status "Bundle meteor App"
 # should be no-op for any builds that don't have mobile targets.
 # HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios android
 for i in `cat ${build_dir}/.meteor/platforms`; do
-  if [ "$i" != "server" ] && [ "$i" != "browser"]; then
+  if [ "$i" != "server" ] && [ "$i" != "browser" ]; then
     HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform  $i
   fi
 done
