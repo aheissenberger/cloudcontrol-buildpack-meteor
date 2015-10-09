@@ -21,11 +21,12 @@ Example
 ~~~bash
 $ meteor create --example todos
 $ cd todos
-$ cctrlapp APP_NAME create custom --buildpack https://github.com/aheissenberger/cloudcontrol-buildpack-meteor.git
+$ export set mappname=APP_NAME
+$ cctrlapp ${mappname} create custom --buildpack https://github.com/aheissenberger/cloudcontrol-buildpack-meteor.git
 $ git init && git add . && git commit -m 'init'
-$ cctrlapp APP_NAME/default addon.add mongolab.sandbox
-$ cctrlapp APP_NAME/default push
-$ cctrlapp APP_NAME/default deploy
+$ cctrlapp ${mappname}/default addon.add mongolab.sandbox
+$ cctrlapp ${mappname}/default push
+$ cctrlapp ${mappname}/default deploy
 ~~~
 
 Info
