@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # influence https://github.com/AdmitHub/meteor-buildpack-horse
 
+if [  -f $1/.buildpack/envrc ]; then
+  source $1/.buildpack/envrc
+fi
+
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
 if [ -n "$buildpack_debug" ]; then
