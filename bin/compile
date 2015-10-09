@@ -60,7 +60,7 @@ status "Bundle meteor App"
 # Temporary hack to address meteor failing to bundle if mobile targets are
 # included but server URL is not (issue #2).  Remove mobile targets. This
 # should be no-op for any builds that don't have mobile targets.
-HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios android
+#HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" remove-platform ios android
 # </hack>
 
 # <hack issue="https://github.com/meteor/meteor/issues/2796>
