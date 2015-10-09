@@ -96,3 +96,15 @@ To list the available versions of Node.js and npm, see these manifests:
 
 This is a [buildpack](https://www.cloudcontrol.com/dev-center/Platform%20Documentation#buildpacks-and-the-procfile) for
 [meteor apps](http://www.meteor.com).
+
+debugging buildscript errors
+-------------
+* create directory `.buildpack`
+* create file `.buildpack/envrc`
+```bash
+export buildpack_debug="-x"
+```
+
+use buildpack from other branch
+-------------
+cctrlapp ${mappname} create custom --buildpack https://github.com/aheissenberger/cloudcontrol-buildpack-meteor.git#BRANCHNAME

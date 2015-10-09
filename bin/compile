@@ -3,7 +3,9 @@
 
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
-set -x          # enable debugging
+if [ -z "$buildpack_debug" ]; then
+  set $buildpack_debug          # enable debugging: set -x
+fi
 
 # Configure directories
 build_dir=$1
@@ -45,8 +47,7 @@ status "Meteor version used by app: ${APP_MVERSION}"
 
 # update meteor from cache if app needs different version
 if [ "$MVERSION" != "$APP_MVERSION" ]; then
-  status "Update meteor"
-  cd $VENDORED_METEOR
+  status "Update meteor in app root"
   HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update
 fi
 
