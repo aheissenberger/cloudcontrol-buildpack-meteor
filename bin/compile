@@ -3,7 +3,7 @@
 
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
-if [ -z "$buildpack_debug" ]; then
+if [ -n "$buildpack_debug" ]; then
   set $buildpack_debug          # enable debugging: set -x
 fi
 
