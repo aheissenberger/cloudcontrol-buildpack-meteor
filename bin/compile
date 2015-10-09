@@ -46,6 +46,8 @@ status "Meteor version used by app: ${APP_MVERSION}"
 if [ "$MVERSION" != "$APP_MVERSION" ]; then
   status "Update meteor"
   cd $VENDORED_METEOR
+  HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" --version
+  HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" list
   HOME="$VENDORED_METEOR" "$VENDORED_METEOR/.meteor/meteor" update
 fi
 
